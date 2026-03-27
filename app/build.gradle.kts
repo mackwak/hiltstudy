@@ -3,13 +3,9 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
-    // Kotlin Android plugin via version catalog
     alias(libs.plugins.kotlin.android)
-    // Compose Kotlin plugin via version catalog
     alias(libs.plugins.kotlinCompose)
-    // Kapt via version catalog
     alias(libs.plugins.kotlinKapt)
-    // Hilt Gradle plugin
     alias(libs.plugins.hilt)
 }
 
@@ -89,6 +85,11 @@ android {
 }
 
 dependencies {
+    implementation("androidx.activity:activity-compose:1.9.3")
+
+    val composeBom = platform("androidx.compose:compose-bom:2025.02.00") // Use a recent BOM version
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
