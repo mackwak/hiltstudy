@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kotlinCompose)
     alias(libs.plugins.kotlinKapt)
     alias(libs.plugins.hilt)
+    id("com.google.gms.google-services")
 }
 
 
@@ -23,7 +24,8 @@ android {
     compileSdk = 36
 
     buildFeatures {
-        buildConfig = true // This MUST be true for variant constants to work
+        buildConfig = true
+        viewBinding = true// This MUST be true for variant constants to work
     }
 
     flavorDimensions.add("environment")
@@ -86,6 +88,11 @@ android {
 
 dependencies {
     implementation("androidx.activity:activity-compose:1.9.3")
+    implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
 
     val composeBom = platform("androidx.compose:compose-bom:2025.02.00") // Use a recent BOM version
     implementation(composeBom)

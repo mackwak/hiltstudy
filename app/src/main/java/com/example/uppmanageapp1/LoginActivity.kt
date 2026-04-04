@@ -26,20 +26,45 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.uppmanageapp1.login.AuthManager
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+
+@AndroidEntryPoint
 class LoginActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var authManager: AuthManager // 매니저 주입
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (authManager.isUserLoggedIn()) {
+            goToMainActivity()
+        }
+
         setContent {
             LoginScreen(onLogin = { email, password ->
                 if (email.isBlank() || password.isBlank()) {
                     Toast.makeText(this, "이메일과 비밀번호를 입력하세요.", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show()
-                   // startActivity(Intent(this, MainActivity::class.java))
-                    finish()
+                    // AuthManager 사용
+                    authManager.signIn(email, password) { success, error ->
+                        if (success) {
+                            Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show()
+                            goToMainActivity()
+                        } else {
+                            Toast.makeText(this, "로그인 실패: $error", Toast.LENGTH_LONG).show()
+                        }
+                    }
                 }
             })
         }
+    }
+
+    private fun goToMainActivity() {
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 }
 

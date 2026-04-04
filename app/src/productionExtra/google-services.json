@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "275294110055",
+    "project_id": "bento-70e5a",
+    "storage_bucket": "bento-70e5a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:275294110055:android:1216834af45182cb1fefc2",
+        "android_client_info": {
+          "package_name": "com.bento"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_2mxywFt-wObxsE9yCwqlzW7Rp9I-YfY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:275294110055:android:d502721cc6b9b9681fefc2",
+        "android_client_info": {
+          "package_name": "com.example.uppmanageapp1.productionextra"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_2mxywFt-wObxsE9yCwqlzW7Rp9I-YfY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

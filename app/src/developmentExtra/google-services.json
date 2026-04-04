@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "966285816680",
+    "project_id": "ugg-store-d4872",
+    "storage_bucket": "ugg-store-d4872.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:966285816680:android:c0f142e7638d17119d5cdd",
+        "android_client_info": {
+          "package_name": "com.example.uppmanageapp1.developmentextra"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwP1tpyDzIVwtwlwtcpZKNdTOIVnqVf3M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:966285816680:android:381b402131b656129d5cdd",
+        "android_client_info": {
+          "package_name": "com.example.week1study"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwP1tpyDzIVwtwlwtcpZKNdTOIVnqVf3M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:966285816680:android:74b501965fadf0eb9d5cdd",
+        "android_client_info": {
+          "package_name": "com.example.week1study.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwP1tpyDzIVwtwlwtcpZKNdTOIVnqVf3M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
