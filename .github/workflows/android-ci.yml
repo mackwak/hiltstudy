@@ -2,6 +2,7 @@ name: Android CI
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+  SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
 
 on:
   push:
@@ -35,17 +36,16 @@ jobs:
 
       - name: Inject CI secrets into gradle.properties
         run: |
-          # Ensure gradle.properties exists
           mkdir -p "$GITHUB_WORKSPACE"
           touch "$GITHUB_WORKSPACE/gradle.properties"
-          # Inject SHOPIFY_ACCESS_TOKEN only if the secret is set
-          if [ -n "${{ secrets.SHOPIFY_ACCESS_TOKEN }}" ]; then
-            # If key exists, replace it; otherwise append with a preceding newline to avoid concatenation
+
+          if [ -n "$SHOPIFY_ACCESS_TOKEN" ]; then
             if grep -q '^SHOPIFY_ACCESS_TOKEN=' "$GITHUB_WORKSPACE/gradle.properties"; then
-              sed -i "s|^SHOPIFY_ACCESS_TOKEN=.*|SHOPIFY_ACCESS_TOKEN=${{ secrets.SHOPIFY_ACCESS_TOKEN }}|" "$GITHUB_WORKSPACE/gradle.properties"
+              sed -i "s|^SHOPIFY_ACCESS_TOKEN=.*|SHOPIFY_ACCESS_TOKEN=$SHOPIFY_ACCESS_TOKEN|" "$GITHUB_WORKSPACE/gradle.properties"
             else
-              printf '\nSHOPIFY_ACCESS_TOKEN=%s\n' "${{ secrets.SHOPIFY_ACCESS_TOKEN }}" >> "$GITHUB_WORKSPACE/gradle.properties"
+              printf '\nSHOPIFY_ACCESS_TOKEN=%s\n' "$SHOPIFY_ACCESS_TOKEN" >> "$GITHUB_WORKSPACE/gradle.properties"
             fi
+            echo "Injected SHOPIFY_ACCESS_TOKEN into gradle.properties"
           else
             echo "SHOPIFY_ACCESS_TOKEN secret not set; skipping injection"
           fi
@@ -56,8 +56,8 @@ jobs:
       - name: Build debug APK
         run: ./gradlew assembleDebug --no-daemon --stacktrace
 
-      - name: Run unit tests
-        run: ./gradlew testDebugUnitTest --no-daemon --stacktrace
+      - name: Run unit tests (all flavors)
+        run: ./gradlew test --no-daemon --stacktrace
 
       - name: Run lint
         run: ./gradlew lintDebug --no-daemon --stacktrace
