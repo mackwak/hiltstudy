@@ -18,7 +18,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -31,47 +30,39 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class LoginActivity : ComponentActivity() {
+class SignUpActivity : ComponentActivity() {
 
     @Inject
-    lateinit var authManager: AuthManager // 매니저 주입
+    lateinit var authManager: AuthManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (authManager.isUserLoggedIn()) {
-            goToMainActivity()
-        }
-
         setContent {
-            LoginScreen(onLogin = { email, password ->
+            SignUpScreen(onSignUp = { email, password ->
                 if (email.isBlank() || password.isBlank()) {
                     Toast.makeText(this, "이메일과 비밀번호를 입력하세요.", Toast.LENGTH_SHORT).show()
                 } else {
-                    // AuthManager 사용
-                    authManager.signIn(email, password) { success, error ->
+                    authManager.signUp(email, password) { success, error ->
                         if (success) {
-                            Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show()
-                            goToMainActivity()
+                            Toast.makeText(this, "회원가입 성공", Toast.LENGTH_SHORT).show()
+                            startActivity(Intent(this, MainActivity::class.java))
+                            finish()
                         } else {
-                            Toast.makeText(this, "로그인 실패: $error", Toast.LENGTH_LONG).show()
+                            Toast.makeText(this, "회원가입 실패: $error", Toast.LENGTH_LONG).show()
                         }
                     }
                 }
-            }, onNavigateToSignUp = {
-                startActivity(Intent(this, SignUpActivity::class.java))
+            }, onNavigateToLogin = {
+                startActivity(Intent(this, LoginActivity::class.java))
+                finish()
             })
         }
-    }
-
-    private fun goToMainActivity() {
-        startActivity(Intent(this, MainActivity::class.java))
-        finish()
     }
 }
 
 @Composable
-fun LoginScreen(onLogin: (String, String) -> Unit, onNavigateToSignUp: () -> Unit) {
+fun SignUpScreen(onSignUp: (String, String) -> Unit, onNavigateToLogin: () -> Unit) {
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
 
@@ -83,7 +74,7 @@ fun LoginScreen(onLogin: (String, String) -> Unit, onNavigateToSignUp: () -> Uni
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "로그인", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(bottom = 16.dp))
+            Text(text = "회원가입", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(bottom = 16.dp))
 
             OutlinedTextField(
                 value = email,
@@ -107,17 +98,18 @@ fun LoginScreen(onLogin: (String, String) -> Unit, onNavigateToSignUp: () -> Uni
             )
 
             Button(
-                onClick = { onLogin(email.trim(), password) },
+                onClick = { onSignUp(email.trim(), password) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 20.dp)
             ) {
-                Text(text = "로그인")
+                Text(text = "회원가입")
             }
 
-            TextButton(onClick = { onNavigateToSignUp() }, modifier = Modifier.padding(top = 8.dp)) {
-                Text(text = "회원가입")
+            TextButton(onClick = { onNavigateToLogin() }, modifier = Modifier.padding(top = 8.dp)) {
+                Text(text = "이미 계정이 있으신가요? 로그인")
             }
         }
     }
 }
+

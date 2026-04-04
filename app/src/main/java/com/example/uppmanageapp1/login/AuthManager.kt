@@ -33,6 +33,20 @@ class AuthManager @Inject constructor(
             }
     }
 
+    // 유저 생성(회원가입)
+    fun signUp(email: String, password: String, onResult: (Boolean, String?) -> Unit) {
+        firebaseAuth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // 선택: 이메일 인증 보내기
+                    firebaseAuth.currentUser?.sendEmailVerification()
+                    onResult(true, null)
+                } else {
+                    onResult(false, task.exception?.message)
+                }
+            }
+    }
+
     // 유저 UID 가져오기
     fun getUserId(): String? = firebaseAuth.currentUser?.uid
 }
