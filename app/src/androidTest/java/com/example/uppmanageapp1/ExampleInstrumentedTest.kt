@@ -15,10 +15,12 @@ import org.junit.Assert.*
  */
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
+
     @Test
-    fun useAppContext() {
-        // Context of the app under test.
+    fun appContextPackageNameIsCorrect() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.example.uppmanageapp1", appContext.packageName)
+        // Allow for productFlavor applicationId suffixes (e.g. .developmentextra)
+        assertTrue(appContext.packageName.startsWith("com.example.uppmanageapp1"))
     }
+
 }
