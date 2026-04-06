@@ -11,10 +11,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -23,6 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.ui.graphics.Color
 
 @Composable
 fun ShopifyProductsScreen(viewModel: ShopViewModel = hiltViewModel()) {
@@ -76,11 +85,23 @@ fun ProductItem(product: Product, onClick: () -> Unit) {
                     .clip(RoundedCornerShape(8.dp))
             )
 
-            Column(modifier = Modifier.padding(start = 12.dp)) {
+            Column(modifier = Modifier
+                .padding(start = 12.dp)
+                .weight(1f)
+            ) {
                 Text(text = product.title, style = MaterialTheme.typography.titleMedium)
                 Text(text = product.price, style = MaterialTheme.typography.bodyMedium)
+            }
+
+            var isFavorite = remember { mutableStateOf(false) }
+
+            IconButton(onClick = { isFavorite.value = !isFavorite.value }) {
+                Icon(
+                    imageVector = if (isFavorite.value) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                    contentDescription = if (isFavorite.value) "즐겨찾기 해제" else "즐겨찾기",
+                    tint = if (isFavorite.value) Color.Red else Color.Gray
+                )
             }
         }
     }
 }
-

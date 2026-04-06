@@ -148,4 +148,8 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     // Retrofit & Moshi for Shopify API
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+    // Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.compiler)
 }
