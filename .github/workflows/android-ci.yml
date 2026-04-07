@@ -37,6 +37,6 @@ jobs:
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
 
       - name: Build & upload via Fastlane
-        run: bundle exec fastlane build flavor:developmentExtra build_type:release
+        run: bundle exec fastlane build flavor:developmentExtra build_type:debug
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
