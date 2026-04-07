@@ -1,0 +1,145 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:android)
+
+platform :android do
+  desc "Runs all the tests"
+  lane :test do
+    gradle(task: "test")
+  end
+
+  desc "Submit a new Beta Build to Crashlytics Beta"
+  lane :beta do
+    gradle(task: "clean assembleRelease")
+    crashlytics
+  
+    # sh "your_script.sh"
+    # You can also use other beta testing services here
+  end
+
+
+
+lane :build do |options|
+    # Get the build type from the options passed to the lane.
+    # It defaults to 'debug' if no type is provided.
+ flavor = options[:flavor] || "developmentExtra"
+   build_type = options[:build_type] || "debug"
+
+   # Fix: Only uppercase the first letter, leave 'extra' as 'Extra'
+   formatted_flavor = flavor.sub(/./, &:upcase)
+   formatted_type = build_type.capitalize
+
+   target_task = "assemble#{formatted_flavor}#{formatted_type}"
+
+   puts "🚀 Building variant: #{target_task}"
+
+    if build_type == "debug"
+        if flavor == "developmentExtra"
+
+              app_id = "1:966285816680:android:c0f142e7638d17119d5cdd"
+
+              # 1. Fetch the latest release metadata
+              # Note: Ensure FIREBASE_TOKEN is in your .env or Environment Variables
+              latest_release = firebase_app_distribution_get_latest_release(app: app_id)
+
+              # 2. Determine build numbers safely
+              if latest_release
+                latest_build_number = latest_release[:buildVersion].to_i
+                new_build_number = latest_build_number + 1
+              else
+                # Handle the "First Build" scenario
+                latest_build_number = 0
+                new_build_number = 1
+              end
+
+              puts "📈 Latest Firebase build: #{latest_build_number}"
+              puts "🚀 New build number: #{new_build_number}"
+
+              sh("rm -rf app/build/outputs/apk/developmentExtra/debug/app-developmentExtra-debug.apk")
+
+              # 3. Build the APK
+              # target_task should be "assembleDevelopmentExtraDebug" based on your previous messages
+              gradle(
+               task: "assembleDevelopmentExtraDebug",
+                 properties: {
+                   "android.injected.version.code" => new_build_number,
+                   "build_timestamp" => Time.now.to_i.to_s # Adds a unique hidden value
+                 }
+              )
+
+              # 4. Upload to Firebase
+              firebase_app_distribution(
+                app: app_id,
+                apk_path: "app/build/outputs/apk/developmentExtra/debug/app-developmentExtra-debug.apk",
+                release_notes: "Build ##{new_build_number}: New build with bug fixes and features.",
+                groups: "wow"
+              )
+
+            else
+                 app_id = "1:275294110055:android:d502721cc6b9b9681fefc2"
+
+                 # 1. Fetch the latest release metadata
+                 # Note: Ensure FIREBASE_TOKEN is in your .env or Environment Variables
+                 latest_release = firebase_app_distribution_get_latest_release(app: app_id)
+
+                 # 2. Determine build numbers safely
+                 if latest_release
+                   latest_build_number = latest_release[:buildVersion].to_i
+                   new_build_number = latest_build_number + 1
+                 else
+                   # Handle the "First Build" scenario
+                   latest_build_number = 0
+                   new_build_number = 1
+                 end
+
+                 puts "📈 Latest Firebase build: #{latest_build_number}"
+                 puts "🚀 New build number: #{new_build_number}"
+
+                 sh("rm -rf app/build/outputs/apk/productionExtra/debug/app-productionExtra-debug.apk")
+
+                 # 3. Build the APK
+                 # target_task should be "assembleDevelopmentExtraDebug" based on your previous messages
+                 gradle(
+                  task: "assembleProductionExtraDebug",
+                    properties: {
+                      "android.injected.version.code" => new_build_number,
+                      "build_timestamp" => Time.now.to_i.to_s # Adds a unique hidden value
+                    }
+                 )
+
+                 # 4. Upload to Firebase
+                 firebase_app_distribution(
+                   app: app_id,
+                   apk_path: "app/build/outputs/apk/productionExtra/debug/app-productionExtra-debug.apk",
+                   release_notes: "Build ##{new_build_number}: New build with bug fixes and features.",
+                   groups: "wow"
+                 )
+            end
+        else
+            # For non-debug builds, just run the standard Gradle task
+            gradle(task: target_task)
+    end
+
+    UI.success("✅ Build successful for variant: #{build_type}!")
+    # The generated APK/AAB will be in app/build/outputs/
+  end
+
+  desc "Deploy a new version to the Google Play"
+  lane :deploy do
+    gradle(task: "clean assembleRelease")
+    upload_to_play_store
+  end
+end

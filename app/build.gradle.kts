@@ -68,11 +68,12 @@ android {
         }
     }
 
+    val injectedVersionCode = project.findProperty("android.injected.version.code")?.toString()?.toInt() ?: 2
     defaultConfig {
         applicationId = "com.example.uppmanageapp1"
         minSdk = 25
         targetSdk = 36
-        versionCode = 1
+        versionCode = injectedVersionCode
         versionName = "1.0"
 
         buildConfigField("String", "SHOPIFY_ACCESS_TOKEN", "\"${shopifyTokenFinal}\"")

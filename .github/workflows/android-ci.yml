@@ -64,7 +64,7 @@ jobs:
         run: |
           # 예시: Fastfile에 android 플랫폼의 firebase_upload 레인을 구현해야 함
           # lane 예: android firebase_upload (variant 인자 필요시 추가)
-          bundle exec fastlane android firebase_upload
+          bundle exec fastlane build flavor:developmentExtra build_type:release
         env:
           ANDROID_HOME: ${{ env.ANDROID_HOME }}
           ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}

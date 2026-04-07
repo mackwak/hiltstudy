@@ -18,8 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -93,13 +91,15 @@ fun ProductItem(product: Product, onClick: () -> Unit) {
                 Text(text = product.price, style = MaterialTheme.typography.bodyMedium)
             }
 
-            var isFavorite = remember { mutableStateOf(false) }
+            // Room-backed favorite state using FavoriteViewModel
+            val favoriteViewModel: FavoriteViewModel = hiltViewModel()
+            val isFavorite by favoriteViewModel.isFavoriteFlow(product.id).collectAsState(initial = false)
 
-            IconButton(onClick = { isFavorite.value = !isFavorite.value }) {
+            IconButton(onClick = { favoriteViewModel.toggleFavorite(product.id) }) {
                 Icon(
-                    imageVector = if (isFavorite.value) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                    contentDescription = if (isFavorite.value) "즐겨찾기 해제" else "즐겨찾기",
-                    tint = if (isFavorite.value) Color.Red else Color.Gray
+                    imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                    contentDescription = if (isFavorite) "즐겨찾기 해제" else "즐겨찾기",
+                    tint = if (isFavorite) Color.Red else Color.Gray
                 )
             }
         }
