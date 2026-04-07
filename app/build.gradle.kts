@@ -59,6 +59,7 @@ android {
 
     }
 
+    
     signingConfigs {
         create("release") {
             storeFile = file(keystoreProperties["storeFile"] as String)
