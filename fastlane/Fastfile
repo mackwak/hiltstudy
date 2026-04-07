@@ -53,7 +53,7 @@ lane :build do |options|
 
               # 1. Fetch the latest release metadata
               # Note: Ensure FIREBASE_TOKEN is in your .env or Environment Variables
-              latest_release = firebase_app_distribution_get_latest_release(app: app_id)
+              latest_release = firebase_app_distribution_get_latest_release(app: app_id, firebase_cli_token: ENV["FIREBASE_TOKEN"])
 
               # 2. Determine build numbers safely
               if latest_release
@@ -93,7 +93,7 @@ lane :build do |options|
 
                  # 1. Fetch the latest release metadata
                  # Note: Ensure FIREBASE_TOKEN is in your .env or Environment Variables
-                 latest_release = firebase_app_distribution_get_latest_release(app: app_id)
+                 latest_release = firebase_app_distribution_get_latest_release(app: app_id, firebase_cli_token: ENV["FIREBASE_TOKEN"])
 
                  # 2. Determine build numbers safely
                  if latest_release
