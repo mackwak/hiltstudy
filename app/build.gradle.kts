@@ -122,6 +122,7 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+    implementation(libs.androidx.ui.test.junit4.android)
     val composeBom = platform("androidx.compose:compose-bom:2025.02.00") // Use a recent BOM version
     implementation(composeBom)
     androidTestImplementation(composeBom)
@@ -153,4 +154,5 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     kapt(libs.androidx.room.compiler)
+    testImplementation(kotlin("test"))
 }

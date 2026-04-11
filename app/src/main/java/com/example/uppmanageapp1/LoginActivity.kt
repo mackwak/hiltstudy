@@ -23,6 +23,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -90,7 +91,7 @@ fun LoginScreen(onLogin: (String, String) -> Unit, onNavigateToSignUp: () -> Uni
                 onValueChange = { email = it },
                 label = { Text("이메일") },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("email_input"),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
             )
 
@@ -100,7 +101,7 @@ fun LoginScreen(onLogin: (String, String) -> Unit, onNavigateToSignUp: () -> Uni
                 label = { Text("비밀번호") },
                 singleLine = true,
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth().testTag("password_input")
                     .padding(top = 12.dp),
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
@@ -108,8 +109,9 @@ fun LoginScreen(onLogin: (String, String) -> Unit, onNavigateToSignUp: () -> Uni
 
             Button(
                 onClick = { onLogin(email.trim(), password) },
+                enabled = email.isNotBlank() && password.isNotBlank(),
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth().testTag("login_button")
                     .padding(top = 20.dp)
             ) {
                 Text(text = "로그인")
