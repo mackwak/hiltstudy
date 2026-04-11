@@ -8,10 +8,11 @@ on:
 
 jobs:
   build-and-upload:
+    # 에뮬레이터 성능을 위해 macOS가 유리하지만, 비용을 고려해 ubuntu-latest 유지 시 설정을 최적화합니다.
     runs-on: ubuntu-latest
     env:
-      # Opt into Node.js 24 to clear the deprecation warning
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,15 +40,22 @@ jobs:
       - name: Run Unit Tests
         run: bundle exec fastlane test
 
-    - name: Run UI Tests (Instrumented)
+      # 들여쓰기 오류 수정 및 에뮬레이터 타임아웃 방지 설정 적용
+      - name: Run UI Tests (Instrumented)
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 31 # 조금 더 가벼운 버전 권장
+          api-level: 31
           target: google_apis
           arch: x86_64
           disable-animations: true
-          # 핵심 가속 및 무력화 옵션
-          emulator-options: -no-window -gpu swiftshader_indirect -no-audio -no-boot-anim
+          emulator-boot-timeout: 600
+          # 하드웨어 가속이 없는 환경을 위한 핵심 옵션
+          emulator-options: >
+            -no-window 
+            -gpu swiftshader_indirect 
+            -no-audio 
+            -no-boot-anim 
+            -camera-back none
           script: bundle exec fastlane uitest flavor:developmentExtra
 
       - name: Build & upload via Fastlane
