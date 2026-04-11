@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -16,6 +17,35 @@ import org.junit.Assert.*
 class LoginScreenTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<LoginActivity>()
+
+    @Test
+    fun snackbar_showsFailureMessage_onInvalidLogin() {
+        // Given: Fill in credentials so the login button becomes enabled
+        // Note: We use an invalid email/password to trigger the 'error' callback in AuthManager
+        composeTestRule.onNodeWithTag("email_input").performTextInput("invalid@user.com")
+        composeTestRule.onNodeWithTag("password_input").performTextInput("wrongpassword")
+
+        // When: Click the login button
+        composeTestRule.onNodeWithTag("login_button").performClick()
+
+        composeTestRule.waitUntil(timeoutMillis = 5000) {
+
+            composeTestRule
+                .onAllNodesWithText("로그인 실패", substring = true)
+                .fetchSemanticsNodes().isNotEmpty()
+
+        }
+        // Then: Assert that the Snackbar with the error message appears
+        // We use substring = true because the actual message is "로그인 실패: [Firebase Error]"
+        composeTestRule.onNodeWithText("로그인 실패", substring = true).assertExists()
+    }
+
+    @Test
+    fun snackbar_isNotShown_initially() {
+        // Then: On startup, no error snackbar should be visible
+        composeTestRule.onNodeWithText("로그인 실패", substring = true).assertDoesNotExist()
+        composeTestRule.onNodeWithText("이메일과 비밀번호를 입력하세요").assertDoesNotExist()
+    }
 
     @Test
     fun loginButton_isDisabled_whenFieldsAreEmpty() {

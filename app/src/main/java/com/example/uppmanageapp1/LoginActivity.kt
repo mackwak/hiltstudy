@@ -2,23 +2,27 @@ package com.example.uppmanageapp1
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -29,13 +33,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.uppmanageapp1.login.AuthManager
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginActivity : ComponentActivity() {
 
     @Inject
-    lateinit var authManager: AuthManager // 매니저 주입
+    lateinit var authManager: AuthManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,23 +50,37 @@ class LoginActivity : ComponentActivity() {
         }
 
         setContent {
-            LoginScreen(onLogin = { email, password ->
-                if (email.isBlank() || password.isBlank()) {
-                    Toast.makeText(this, "이메일과 비밀번호를 입력하세요.", Toast.LENGTH_SHORT).show()
-                } else {
-                    // AuthManager 사용
-                    authManager.signIn(email, password) { success, error ->
-                        if (success) {
-                            Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show()
-                            goToMainActivity()
+            val snackbarHostState = remember { SnackbarHostState() }
+            val scope = rememberCoroutineScope()
+
+            Scaffold(
+                snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+            ) { padding ->
+                LoginScreen(
+                    modifier = Modifier.padding(padding),
+                    onLogin = { email, password ->
+                        if (email.isBlank() || password.isBlank()) {
+                            scope.launch {
+                                snackbarHostState.showSnackbar("이메일과 비밀번호를 입력하세요.")
+                            }
                         } else {
-                            Toast.makeText(this, "로그인 실패: $error", Toast.LENGTH_LONG).show()
+                            authManager.signIn(email, password) { success, error ->
+                                if (success) {
+                                    // Note: Snackbar might not show long if activity finishes immediately
+                                    goToMainActivity()
+                                } else {
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar("로그인 실패: $error")
+                                    }
+                                }
+                            }
                         }
+                    },
+                    onNavigateToSignUp = {
+                        startActivity(Intent(this, SignUpActivity::class.java))
                     }
-                }
-            }, onNavigateToSignUp = {
-                startActivity(Intent(this, SignUpActivity::class.java))
-            })
+                )
+            }
         }
     }
 
@@ -72,15 +91,19 @@ class LoginActivity : ComponentActivity() {
 }
 
 @Composable
-fun LoginScreen(onLogin: (String, String) -> Unit, onNavigateToSignUp: () -> Unit) {
+fun LoginScreen(
+    onLogin: (String, String) -> Unit,
+    onNavigateToSignUp: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
 
     MaterialTheme {
         Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
+            modifier = modifier
+                .fillMaxSize()
+                .padding(16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -91,7 +114,9 @@ fun LoginScreen(onLogin: (String, String) -> Unit, onNavigateToSignUp: () -> Uni
                 onValueChange = { email = it },
                 label = { Text("이메일") },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth().testTag("email_input"),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("email_input"),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
             )
 
@@ -101,7 +126,8 @@ fun LoginScreen(onLogin: (String, String) -> Unit, onNavigateToSignUp: () -> Uni
                 label = { Text("비밀번호") },
                 singleLine = true,
                 modifier = Modifier
-                    .fillMaxWidth().testTag("password_input")
+                    .fillMaxWidth()
+                    .testTag("password_input")
                     .padding(top = 12.dp),
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
@@ -111,7 +137,8 @@ fun LoginScreen(onLogin: (String, String) -> Unit, onNavigateToSignUp: () -> Uni
                 onClick = { onLogin(email.trim(), password) },
                 enabled = email.isNotBlank() && password.isNotBlank(),
                 modifier = Modifier
-                    .fillMaxWidth().testTag("login_button")
+                    .fillMaxWidth()
+                    .testTag("login_button")
                     .padding(top = 20.dp)
             ) {
                 Text(text = "로그인")
