@@ -16,10 +16,7 @@
 default_platform(:android)
 
 platform :android do
-  desc "Runs all the tests"
-  lane :test do
-    gradle(task: "test")
-  end
+
 
   desc "Submit a new Beta Build to Crashlytics Beta"
   lane :beta do
@@ -30,7 +27,27 @@ platform :android do
     # You can also use other beta testing services here
   end
 
+desc "Runs all the tests"
+  lane :test do
+    gradle(task: "test")
+  end
 
+  # --- NEW: UI Testing Lane ---
+  desc "Runs Android Instrumented (UI) tests"
+  lane :uitest do |options|
+    flavor = options[:flavor] || "developmentExtra"
+
+    # Capitalize the first letter for the task name
+    formatted_flavor = flavor.sub(/./, &:upcase)
+
+    # Task is usually connected[Flavor]DebugAndroidTest
+    # e.g., connectedDevelopmentExtraDebugAndroidTest
+    target_task = "connected#{formatted_flavor}DebugAndroidTest"
+
+    puts "🧪 Running UI Tests for: #{target_task}"
+
+    gradle(task: target_task)
+  end
 
 lane :build do |options|
     # Get the build type from the options passed to the lane.

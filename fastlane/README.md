@@ -15,6 +15,14 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## Android
 
+### android beta
+
+```sh
+[bundle exec] fastlane android beta
+```
+
+Submit a new Beta Build to Crashlytics Beta
+
 ### android test
 
 ```sh
@@ -23,13 +31,13 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 Runs all the tests
 
-### android beta
+### android uitest
 
 ```sh
-[bundle exec] fastlane android beta
+[bundle exec] fastlane android uitest
 ```
 
-Submit a new Beta Build to Crashlytics Beta
+Runs Android Instrumented (UI) tests
 
 ### android build
 
