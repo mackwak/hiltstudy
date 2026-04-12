@@ -16,6 +16,12 @@ val keystorePropertiesFile = rootProject.file("keystore.properties")
 val keystoreProperties = Properties()
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+} else {
+    // CI 환경을 위해 환경 변수에서 매핑 (GitHub Secrets 활용 시)
+    setProperty("storeFile", System.getenv("KEYSTORE_FILE_PATH") ?: "")
+    setProperty("storePassword", System.getenv("KEYSTORE_PASSWORD") ?: "")
+    setProperty("keyAlias", System.getenv("KEY_ALIAS") ?: "")
+    setProperty("keyPassword", System.getenv("KEY_PASSWORD") ?: "")
 }
 
 // Add reading local Shopify token for BuildConfig
@@ -60,10 +66,13 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file(keystoreProperties["storeFile"] as String)
-            storePassword = keystoreProperties["storePassword"] as String
-            keyAlias = keystoreProperties["keyAlias"] as String
-            keyPassword = keystoreProperties["keyPassword"] as String
+            val path = keystoreProperties["storeFile"] as String
+            if (path.isNotEmpty()) {
+                storeFile = file(path)
+                storePassword = keystoreProperties["storePassword"] as String
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+            }
         }
     }
 
