@@ -25,8 +25,7 @@ val localProps = Properties().apply {
 }
 val shopifyTokenFromLocal: String = localProps.getProperty("SHOPIFY_ACCESS_TOKEN", "")
 
-// --- Gradle project 속성에서 읽기 (안전하게 toString 사용) ---
-val shopifyTokenFromProject: String? = project.findProperty("SHOPIFY_ACCESS_TOKEN")?.toString()
+val shopifyTokenFromProject: String? = System.getenv("SHOPIFY_ACCESS_TOKEN")?.toString()
 
 // --- 우선순위: project 속성 > local.properties > 빈 문자열 ---
 val shopifyTokenFinal: String = shopifyTokenFromProject?.takeIf { it.isNotBlank() } ?: shopifyTokenFromLocal

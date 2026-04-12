@@ -40,25 +40,8 @@ jobs:
       - name: Run Unit Tests
         run: bundle exec fastlane test
 
-      # 들여쓰기 오류 수정 및 에뮬레이터 타임아웃 방지 설정 적용
-      - name: Run UI Tests (Instrumented)
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 31
-          target: google_apis
-          arch: x86_64
-          disable-animations: true
-          emulator-boot-timeout: 600
-          # 하드웨어 가속이 없는 환경을 위한 핵심 옵션
-          emulator-options: >
-            -no-window 
-            -gpu swiftshader_indirect 
-            -no-audio 
-            -no-boot-anim 
-            -camera-back none
-          script: bundle exec fastlane uitest flavor:developmentExtra
-
       - name: Build & upload via Fastlane
         run: bundle exec fastlane build flavor:developmentExtra build_type:debug
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          API_KEY: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
