@@ -146,8 +146,87 @@ lane :build do |options|
                  )
             end
         else
-            # For non-debug builds, just run the standard Gradle task
-            gradle(task: target_task)
+           if flavor == "developmentExtra"
+
+                         app_id = "1:966285816680:android:c0f142e7638d17119d5cdd"
+
+                         # 1. Fetch the latest release metadata
+                         # Note: Ensure FIREBASE_TOKEN is in your .env or Environment Variables
+                         latest_release = firebase_app_distribution_get_latest_release(app: app_id, firebase_cli_token: ENV["FIREBASE_TOKEN"])
+
+                         # 2. Determine build numbers safely
+                         if latest_release
+                           latest_build_number = latest_release[:buildVersion].to_i
+                           new_build_number = latest_build_number + 1
+                         else
+                           # Handle the "First Build" scenario
+                           latest_build_number = 0
+                           new_build_number = 1
+                         end
+
+                         puts "📈 Latest Firebase build: #{latest_build_number}"
+                         puts "🚀 New build number: #{new_build_number}"
+
+                         sh("rm -rf app/build/outputs/apk/developmentExtra/release/app-developmentExtra-release.apk")
+
+                         # 3. Build the APK
+                         # target_task should be "assembleDevelopmentExtraDebug" based on your previous messages
+                         gradle(
+                          task: "assembleDevelopmentExtraRelease",
+                            properties: {
+                              "android.injected.version.code" => new_build_number,
+                              "build_timestamp" => Time.now.to_i.to_s # Adds a unique hidden value
+                            }
+                         )
+
+                         # 4. Upload to Firebase
+                         firebase_app_distribution(
+                           app: app_id,
+                           apk_path: "app/build/outputs/apk/developmentExtra/release/app-developmentExtra-release.apk",
+                           release_notes: "Build ##{new_build_number}: New build with bug fixes and features.",
+                           groups: "wow"
+                         )
+
+                       else
+                            app_id = "1:275294110055:android:d502721cc6b9b9681fefc2"
+
+                            # 1. Fetch the latest release metadata
+                            # Note: Ensure FIREBASE_TOKEN is in your .env or Environment Variables
+                            latest_release = firebase_app_distribution_get_latest_release(app: app_id, firebase_cli_token: ENV["FIREBASE_TOKEN"])
+
+                            # 2. Determine build numbers safely
+                            if latest_release
+                              latest_build_number = latest_release[:buildVersion].to_i
+                              new_build_number = latest_build_number + 1
+                            else
+                              # Handle the "First Build" scenario
+                              latest_build_number = 0
+                              new_build_number = 1
+                            end
+
+                            puts "📈 Latest Firebase build: #{latest_build_number}"
+                            puts "🚀 New build number: #{new_build_number}"
+
+                            sh("rm -rf app/build/outputs/apk/productionExtra/release/app-productionExtra-release.apk")
+
+                            # 3. Build the APK
+                            # target_task should be "assembleDevelopmentExtraDebug" based on your previous messages
+                            gradle(
+                             task: "assembleProductionExtraRelease",
+                               properties: {
+                                 "android.injected.version.code" => new_build_number,
+                                 "build_timestamp" => Time.now.to_i.to_s # Adds a unique hidden value
+                               }
+                            )
+
+                            # 4. Upload to Firebase
+                            firebase_app_distribution(
+                              app: app_id,
+                              apk_path: "app/build/outputs/apk/productionExtra/release/app-productionExtra-release.apk",
+                              release_notes: "Build ##{new_build_number}: New build with bug fixes and features.",
+                              groups: "wow"
+                            )
+                       end
     end
 
     UI.success("✅ Build successful for variant: #{build_type}!")
