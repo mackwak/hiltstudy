@@ -44,4 +44,4 @@ jobs:
         run: bundle exec fastlane build flavor:developmentExtra build_type:debug
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          API_KEY: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
+          SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
