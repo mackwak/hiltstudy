@@ -41,7 +41,7 @@ jobs:
         run: bundle exec fastlane test
 
       - name: Build & upload via Fastlane
-        run: bundle exec fastlane build flavor:developmentExtra build_type:debug
+        run: bundle exec fastlane build flavor:developmentExtra build_type:release
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
